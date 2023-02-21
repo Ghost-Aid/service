@@ -1,0 +1,202 @@
+#!/bin/bash
+
+# storing user argumets for further processing :
+
+argumets_numbers=$#
+argumets_1=$1
+argumets_2=$2
+
+
+
+space(){
+
+# creating fuction that will make gap between two lines:
+ echo
+}
+
+
+space2(){
+
+# creating fuction that will make gap between two lines:
+echo 
+echo 
+}
+
+
+#=========================>
+ownership(){
+
+# this function will display wonership :
+space
+echo "
+                                    ##########################################
+                                    #                                        #
+                                    #       ░██████╗██████╗░██╗░░░██╗        #
+                                    #       ██╔════╝██╔══██╗██║░░░██║        #
+                                    #       ╚█████╗░██████╔╝╚██╗░██╔╝        #
+                                    #       ░╚═══██╗██╔══██╗░╚████╔╝░        #
+                                    #       ██████╔╝██║░░██║░░╚██╔╝░░        #
+                                    #       ╚═════╝░╚═╝░░╚═╝░░░╚═╝░░░        #
+                                    #                                        #
+                                    #         MADE BY: Lucifer               #
+                                    ##########################################
+  "
+
+echo "                                        -h or --help for more info "
+}
+
+
+#========================>
+help_manual(){
+
+# create a function that will display help section when user do not enter any arguments :
+space2
+echo "  Info: "
+space2
+
+usage # call back function 
+space2
+
+echo "  Warning: "
+
+}
+
+
+#======================>
+usage(){
+
+# create a function that will display how to use this tool 
+echo "  Usage: "
+space
+echo "          comand <service name > to start service "
+echo "          s |-s to check service status "
+echo "          st|--st to stop service "
+}
+
+
+#========================>
+service_start(){
+
+# this function will start service that user want :
+$( systemctl start $1 )
+exit_code=$( echo $? )
+
+if [[ $exit_code -eq 0 ]]
+then
+space
+echo "[+] Successfully start $1 service ."
+# callback function of status service 
+service_status $argumets_1
+
+else
+echo "[!] Error : Something went wrong . "
+
+fi
+}
+
+
+#======================>
+service_stop(){
+
+# this function will stop service that user want :
+null=$ systemctl stop $1 
+exit_code=$( echo $? )
+
+if [[ $exit_code -eq 0 ]]
+then
+space
+echo "[+] Seccessfully stop $1 service ."
+# callback function of servic_status
+service_status $argumets_2
+
+else
+echo "[!] Error : Something went wrong, Service not stop "
+
+fi
+}
+
+
+#========================>
+service_status(){
+
+# this function will display service status that user want :
+
+store_status=$( systemctl status $1 )
+space
+echo " $store_status "
+}
+
+
+#==========================>
+user_arguments_handle(){
+
+# this function will decide which process will be done by this tool :
+if [[ $argumets_numbers -eq 0 ]]
+then
+# display ownership
+ownership 
+
+elif [[ $argumets_numbers -eq 1 ]]
+then
+     service=/etc/init.d/$argumets_1
+     if [[ -e $service ]]
+     then
+        # call back function of start service
+        service_start $argumets_1
+
+    elif [ $argumets_1 == "-h" ] || [ $argumets_1 == "--help" ]
+    then
+        # callback help menu
+        help_manual
+    
+    else
+        echo "[!] Error: Service not found . "
+    fi
+
+
+elif [[ $argumets_numbers -eq 2 ]]
+then
+     case $argumets_1 in
+
+        "-s"|"s")
+            
+            service=/etc/init.d/$argumets_2
+            if [[ -e $service ]]
+            then
+            # call back function of stop service
+            service_status $argumets_2
+            else
+            echo "[!] Error: Service not found . "
+            fi
+        ;;
+
+        "-st"|"st")
+            service=/etc/init.d/$argumets_2
+            if [[ -e $service ]]
+            then
+            # call back function of stop service
+            service_stop $argumets_2
+            else
+            echo "[!] Error: Service not found . "
+            fi
+        ;;
+        
+
+        *)
+            echo "[!] Error: Invalid swich or argumetns,try -h or --help  "
+    esac
+
+
+
+elif [[ $argumets_numbers -eq 3 ]]
+then
+# quite mode hobe aita 
+echo "[!] Error: Working on this stage "
+
+else
+echo "[!] Error: Too many arguments, try -h or --help "
+fi
+}
+
+
+user_arguments_handle
